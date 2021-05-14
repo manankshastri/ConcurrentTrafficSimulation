@@ -4,8 +4,7 @@
 #include "Intersection.h"
 #include "Vehicle.h"
 
-Vehicle::Vehicle()
-{
+Vehicle::Vehicle() {
     _currStreet = nullptr;
     _posStreet = 0.0;
     _type = ObjectType::objectVehicle;
@@ -13,8 +12,7 @@ Vehicle::Vehicle()
 }
 
 
-void Vehicle::setCurrentDestination(std::shared_ptr<Intersection> destination)
-{
+void Vehicle::setCurrentDestination(std::shared_ptr<Intersection> destination) {
     // update destination
     _currDestination = destination;
 
@@ -22,36 +20,32 @@ void Vehicle::setCurrentDestination(std::shared_ptr<Intersection> destination)
     _posStreet = 0.0;
 }
 
-void Vehicle::simulate()
-{
+void Vehicle::simulate() {
     // launch drive function in a thread
     threads.emplace_back(std::thread(&Vehicle::drive, this));
 }
 
 // virtual function which is executed in a thread
-void Vehicle::drive()
-{
+void Vehicle::drive() {
     // print id of the current thread
     std::unique_lock<std::mutex> lck(_mtx);
     std::cout << "Vehicle #" << _id << "::drive: thread id = " << std::this_thread::get_id() << std::endl;
     lck.unlock();
 
-    // initalize variables
+    // initialize variables
     bool hasEnteredIntersection = false;
     double cycleDuration = 1; // duration of a single simulation cycle in ms
     std::chrono::time_point<std::chrono::system_clock> lastUpdate;
 
     // init stop watch
     lastUpdate = std::chrono::system_clock::now();
-    while (true)
-    {
+    while (true) {
         // sleep at every iteration to reduce CPU usage
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
         // compute time difference to stop watch
         long timeSinceLastUpdate = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - lastUpdate).count();
-        if (timeSinceLastUpdate >= cycleDuration)
-        {
+        if (timeSinceLastUpdate >= cycleDuration) {
             // update position with a constant velocity motion model
             _posStreet += _speed * timeSinceLastUpdate / 1000;
 
@@ -73,9 +67,8 @@ void Vehicle::drive()
             yv = y1 + completion * dy;
             this->setPosition(xv, yv);
 
-            // check wether halting position in front of destination has been reached
-            if (completion >= 0.9 && !hasEnteredIntersection)
-            {
+            // check whether halting position in front of destination has been reached
+            if (completion >= 0.9 && !hasEnteredIntersection) {
                 // request entry to the current intersection (using async)
                 auto ftrEntryGranted = std::async(&Intersection::addVehicleToQueue, _currDestination, get_shared_this());
 
@@ -87,22 +80,19 @@ void Vehicle::drive()
                 hasEnteredIntersection = true;
             }
 
-            // check wether intersection has been crossed
-            if (completion >= 1.0 && hasEnteredIntersection)
-            {
+            // check whether intersection has been crossed
+            if (completion >= 1.0 && hasEnteredIntersection) {
                 // choose next street and destination
                 std::vector<std::shared_ptr<Street>> streetOptions = _currDestination->queryStreets(_currStreet);
                 std::shared_ptr<Street> nextStreet;
-                if (streetOptions.size() > 0)
-                {
+                if (streetOptions.size() > 0) {
                     // pick one street at random and query intersection to enter this street
                     std::random_device rd;
                     std::mt19937 eng(rd());
                     std::uniform_int_distribution<> distr(0, streetOptions.size() - 1);
                     nextStreet = streetOptions.at(distr(eng));
                 }
-                else
-                {
+                else {
                     // this street is a dead-end, so drive back the same way
                     nextStreet = _currStreet;
                 }

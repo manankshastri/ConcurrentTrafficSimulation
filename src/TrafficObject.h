@@ -5,18 +5,16 @@
 #include <thread>
 #include <mutex>
 
-enum ObjectType
-{
+enum ObjectType {
     noObject,
     objectVehicle,
     objectIntersection,
     objectStreet,
 };
 
-class TrafficObject
-{
+class TrafficObject {
 public:
-    // constructor / desctructor
+    // constructor / destructor
     TrafficObject();
     ~TrafficObject();
 

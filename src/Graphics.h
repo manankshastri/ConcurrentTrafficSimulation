@@ -6,10 +6,9 @@
 #include <opencv2/core.hpp>
 #include "TrafficObject.h"
 
-class Graphics
-{
+class Graphics {
 public:
-    // constructor / desctructor
+    // constructor / destructor
 
     // getters / setters
     void setBgFilename(std::string filename) { _bgFilename = filename; }

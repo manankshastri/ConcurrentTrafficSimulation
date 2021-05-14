@@ -13,8 +13,7 @@ class Street;
 class Vehicle;
 
 // auxiliary class to queue and dequeue waiting vehicles in a thread-safe manner
-class WaitingVehicles
-{
+class WaitingVehicles {
 public:
     // getters / setters
     int getSize();
@@ -29,10 +28,9 @@ private:
     std::mutex _mutex;
 };
 
-class Intersection : public TrafficObject
-{
+class Intersection : public TrafficObject {
 public:
-    // constructor / desctructor
+    // constructor / destructor
     Intersection();
 
     // getters / setters
@@ -54,7 +52,7 @@ private:
     // private members
     std::vector<std::shared_ptr<Street>> _streets;   // list of all streets connected to this intersection
     WaitingVehicles _waitingVehicles; // list of all vehicles and their associated promises waiting to enter the intersection
-    bool _isBlocked;                  // flag indicating wether the intersection is blocked by a vehicle
+    bool _isBlocked;                  // flag indicating weather the intersection is blocked by a vehicle
 
     TrafficLight _trafficLight;
 };

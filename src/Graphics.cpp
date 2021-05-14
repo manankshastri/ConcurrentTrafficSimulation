@@ -5,11 +5,9 @@
 #include "Graphics.h"
 #include "Intersection.h"
 
-void Graphics::simulate()
-{
+void Graphics::simulate() {
     this->loadBackgroundImg();
-    while (true)
-    {
+    while (true) {
         // sleep at every iteration to reduce CPU usage
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
@@ -18,8 +16,7 @@ void Graphics::simulate()
     }
 }
 
-void Graphics::loadBackgroundImg()
-{
+void Graphics::loadBackgroundImg() {
     // create window
     _windowName = "Concurrency Traffic Simulation";
     cv::namedWindow(_windowName, cv::WINDOW_NORMAL);
@@ -31,20 +28,17 @@ void Graphics::loadBackgroundImg()
     _images.push_back(background.clone()); // third element will be the result image for display
 }
 
-void Graphics::drawTrafficObjects()
-{
+void Graphics::drawTrafficObjects() {
     // reset images
     _images.at(1) = _images.at(0).clone();
     _images.at(2) = _images.at(0).clone();
 
     // create overlay from all traffic objects
-    for (auto it : _trafficObjects)
-    {
+    for (auto it : _trafficObjects) {
         double posx, posy;
         it->getPosition(posx, posy);
 
-        if (it->getType() == ObjectType::objectIntersection)
-        {
+        if (it->getType() == ObjectType::objectIntersection) {
             // cast object type from TrafficObject to Intersection
             std::shared_ptr<Intersection> intersection = std::dynamic_pointer_cast<Intersection>(it);
 
@@ -52,8 +46,8 @@ void Graphics::drawTrafficObjects()
             cv::Scalar trafficLightColor = intersection->trafficLightIsGreen() == true ? cv::Scalar(0, 255, 0) : cv::Scalar(0, 0, 255);
             cv::circle(_images.at(1), cv::Point2d(posx, posy), 25, trafficLightColor, -1);
         }
-        else if (it->getType() == ObjectType::objectVehicle)
-        {
+
+        else if (it->getType() == ObjectType::objectVehicle) {
             cv::RNG rng(it->getID());
             int b = rng.uniform(0, 255);
             int g = rng.uniform(0, 255);
