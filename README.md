@@ -1,6 +1,9 @@
 # Concurrent Traffic Simulation
 
-<img src="data/traffic_simulation.gif"/>
+
+<p align=center>
+ <img src="output.gif"/>
+</p>
 
 ## Dependencies for Running Locally
 * cmake >= 2.8
